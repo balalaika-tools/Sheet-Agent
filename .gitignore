@@ -3,6 +3,9 @@
 /sheetrm
 /example_sheets
 /output
+/venv
+/.vscode
+requirements.txt 
 
 # Environment variables
 .env
@@ -15,3 +18,4 @@ __pycache__
 credentials.json
 *.json
 !example.json
+

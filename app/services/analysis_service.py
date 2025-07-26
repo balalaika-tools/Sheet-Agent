@@ -8,7 +8,7 @@ from typing import Any, Dict, Optional
 
 from app.core.config import get_settings
 from app.core.sandbox import Sandbox
-from app.dataset.dataloader import load_problem
+from app.dataset.dataloader import copy_excel
 from app.graph.graph import SheetAgentGraph
 from app.utils.enumeration import MODEL_TYPE
 from app.utils.gcs import upload_to_gcs
@@ -53,46 +53,42 @@ def run_analysis(
         with tempfile.TemporaryDirectory() as temp_dir_str:
             temp_dir = Path(temp_dir_str).resolve()
             output_dir = temp_dir / "output"
-            db_path = temp_dir / "db_path"
 
             # Ensure directories exist
             output_dir.mkdir(exist_ok=True)
-            db_path.mkdir(exist_ok=True)
 
-            logger.info(
-                f"Created temporary directories: output_dir={output_dir}, db_path={db_path}"
-            )
+            logger.info(f"Created temporary directory: output_dir={output_dir}")
 
             unique_id = uuid.uuid4()
             local_workbook_path = output_dir / f"{unique_id}_workbook.xlsx"
 
             logger.info(f"Generated unique ID: {unique_id}")
 
-            # Create the sandbox instance
-            logger.info("Creating sandbox instance")
-            sandbox = Sandbox(base_dir=temp_dir)
-
-            # Load the problem
-            logger.info("Loading problem from workbook")
-            problem = load_problem(
+            # Copy excel file to the temp folder
+            logger.info(f"Copying Excel File to {local_workbook_path}")
+            copy_excel(
                 workbook_path=local_workbook_path,
-                db_path=db_path,
-                instruction=instruction,
                 workbook_source=workbook_source,
                 is_local_file=is_local_file,
             )
+
+            # Create the sandbox instance
+            logger.info("Creating sandbox instance ")
+            sandbox = Sandbox(base_dir=temp_dir, local_workbook_path=local_workbook_path)
+          
 
             # Create the session output directory
             session_output_dir = output_dir / str(unique_id)
             session_output_dir.mkdir(exist_ok=True)
             logger.info(f"Created session output directory: {session_output_dir}")
 
-            # Create and run the SheetAgentGraph with the new LCEL implementation
+            # Create and run the SheetAgentGraph 
             logger.info("Creating SheetAgentGraph")
             agent_graph = SheetAgentGraph(
-                problem=problem,
                 output_dir=session_output_dir,
+                instruction=instruction,
                 sandbox=sandbox,
+                max_retries=5,
             )
 
             # Run the graph

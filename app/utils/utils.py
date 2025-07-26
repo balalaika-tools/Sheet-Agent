@@ -2,9 +2,9 @@ import json
 import re
 from io import StringIO
 from typing import Optional
-
+import yaml 
 import pandas as pd
-
+from typing import Dict, Any
 from app.utils.enumeration import ACTION, MODEL_TYPE
 from app.utils.exceptions import FormatMismatchError, ToolNotFoundError
 
@@ -144,3 +144,19 @@ def count_tokens_openai_chat_models(messages, encoding) -> int:
                 num_tokens += -1  # role is always 1 token
     num_tokens += 2  # every reply is primed with <im_start>assistant
     return num_tokens
+
+def load_config(config_path: str) -> Dict[str, Any]:
+    try:
+        with open(config_path, "r", encoding="utf-8") as file:
+            config = yaml.safe_load(file)  
+        return config
+    except FileNotFoundError:
+        print(f"Error: The file '{config_path}' was not found.")
+        raise
+    except yaml.YAMLError as e:
+        print(f"Error: Failed to parse YAML file '{config_path}'.\nDetails: {e}")
+        raise
+    except Exception as e:
+        print(f"An error occurred while reading '{config_path}': {e}")
+        raise
+

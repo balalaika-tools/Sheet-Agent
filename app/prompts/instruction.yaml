@@ -1,0 +1,98 @@
+prompt: |
+    You are to analyze an *open posts list* from a company, containing all unpaid **invoices** and **credits**.
+
+    ## Rules
+
+    - Check the format of the **due date** column in the Excel file. The format is likely **German date format** and must be interpreted correctly.
+    - **Non-cumulative rows** typically contain:
+        - An invoice number
+        - A due date
+        - An invoice date
+        - An invoice amount
+    - **Invoice rows** are non-cumulative with a **positive** invoice amount.
+    - **Credit rows** are non-cumulative with a **negative** invoice amount.
+    - Rows not fitting the above are **cumulative**.
+    - Calculate **maturity** as:
+        `maturity = (today's date - due date).days`
+    - Store **all output** in a new sheet named `"Analysis"`, formatted clearly.
+
+    ## Tasks
+
+    Perform the following steps, each as a clearly labeled section/column/table on the `"Analysis"` sheet.
+
+    ### 1. List of Cumulative Row Numbers
+    - Identify cumulative rows using one or more:
+        - The key identifier (invoice number) changes format suddenly
+        - Contains terms like **"debitor", "debtor", "creditor"**
+        - Invoice date, due date, or amount are **empty**
+        - The row aggregates values for a group or all records
+    - Output: **Row numbers** (not Excel index) of cumulative rows.
+
+    ### 2. List of Invoice Row Numbers
+    - Non-cumulative rows with a **positive invoice amount**.
+    - Output: **Row numbers** of invoice rows.
+
+    ### 3. List of Credit Row Numbers
+    - Non-cumulative rows with a **negative invoice amount**.
+    - Output: **Row numbers** of credit rows.
+
+    ### 4. Completeness Check for Invoice and Credit Rows
+    - For each row in the **invoice** and **credit** lists, check if required fields are present:
+        - invoice number
+        - invoice amount
+        - debtor/creditor name
+        - address
+        - debtor/creditor number
+
+    **Note:** Field names may be in English or German.
+
+    - Output: Two Columns:
+        - **Invoice Completeness** (True if all fields are present, else False)
+        - **Credit Completeness** (True if all fields present, else False)
+
+    ### 5. Sum of All Invoice Amounts
+    - Sum amounts for all invoice rows.
+    - Output: **Invoice_Sum**, labeled.
+
+    ### 6. Sum of All Credit Amounts
+    - Sum amounts for all credit rows.
+    - Output: **Credit_Sum**, labeled.
+
+    ### 7. Ageing Report for Invoice Rows
+    - For each invoice row, calculate maturity.
+    - Group into **ageing buckets**:
+        1. Not due yet (maturity < 0)
+        2. 1–30 days overdue
+        3. 31–60 days overdue
+        4. >60 days overdue
+    - For each bucket:
+        - Total amount
+        - Percentage of total invoice sum (step 5)
+    - Output: 3 Columns (bucket, totals and percentages)
+
+    ### 8. Ageing Report for Credit Rows
+    - Repeat logic from step 7 for credit rows.
+    - Output: 3 Columns (bucket, totals and percentages)
+
+    ### 9. Top 10 Credit Positions by Amount
+    - List 10 most negative credit rows (lowest values).
+    - Output:
+        - Row number
+        - Invoice number
+        - Amount
+
+    ### 10. Top 10 Debtor Positions by Amount
+    - List 10 invoice rows with the highest amounts, (highest to lowest).
+    - Output:
+        - Row number
+        - Invoice number
+        - Amount
+
+    ### 11. Duplicate Check
+    - Check whether the "invoice" rows hold duplicate invoice numbers.
+    - If there are duplicates, provide a list of the duplicate invoice numbers.
+    - Check the "cumulative" rows for duplicate debtor numbers or names.
+    - If there are duplicates, provide a list of the duplicate debtor numbers or names.
+
+    ## Today's Date
+    - Use for all calculations: `{$datetime_now$}`

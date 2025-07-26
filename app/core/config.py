@@ -133,6 +133,9 @@ class SheetAgentSettings(BaseSettings):
     GCS_BUCKET_NAME: str | None = None
     GOOGLE_APPLICATION_CREDENTIALS: str | None = None
     
+    # LLM 
+    MODEL: str = "o4-mini-2025-04-16"
+    
     # LangSmith Configuration
     LANGSMITH_TRACING: bool = False
     LANGSMITH_ENDPOINT: str 
@@ -179,12 +182,5 @@ def get_settings() -> SheetAgentSettings:
         An instance of SheetAgentSettings.
     """
     settings = SheetAgentSettings()
-    
-    # Explicitly set OS environment variables for LangSmith
-    if settings.LANGSMITH_TRACING:
-        os.environ["LANGSMITH_TRACING"] = "true"
-        os.environ["LANGSMITH_API_KEY"] = settings.LANGSMITH_API_KEY
-        os.environ["LANGSMITH_ENDPOINT"] = settings.LANGSMITH_ENDPOINT
-        os.environ["LANGSMITH_PROJECT"] = settings.LANGSMITH_PROJECT
-    
+
     return settings
