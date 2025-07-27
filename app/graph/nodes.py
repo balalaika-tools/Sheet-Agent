@@ -108,9 +108,7 @@ def reflector_node(state: GraphState) -> GraphState:
 def routing_after_actor(state: GraphState) -> Literal["reflector", "actor", END]:
     if state["code_success"] is False and state["step"] < state["max_retries"]:
         return "actor"
-    elif state["code_success"] is True and state["step"] < state["max_retries"]:
-        return "reflector"
-    elif state["code_success"] is True and state["step"] == state["max_retries"]:
+    elif state["code_success"] is True and state["step"] <= state["max_retries"]:
         return "reflector"
     else:
         return END
