@@ -1,13 +1,13 @@
 from typing import TypedDict, Annotated, List, Optional
 from pathlib import Path
+from operator import add
 
 from langchain_core.messages import BaseMessage
-from langchain_core.runnables import Runnable
 from langgraph.graph import add_messages
 
-from app.dataset.dataloader import SheetProblem
+
 from app.core.sandbox import Sandbox
-from app.core.prompt_manager import PromptManager
+from app.graph.chains import GraphRunnables
 
 class GraphState(TypedDict):
     """
@@ -16,17 +16,22 @@ class GraphState(TypedDict):
     This class represents the state that is passed between nodes in the graph.
     It contains all the necessary information for the workflow to execute.
     """
-    # Static components that don't change during execution
-    problem: SheetProblem
+    # Static Variables
     sandbox: Sandbox
-    planner_chain: Runnable
-    max_steps: int
+    chains: GraphRunnables
+    instruction: str 
     output_dir: Path
-    prompt_manager: PromptManager
+    max_retries: int
+    subtasks: List[str]
     
-    # Dynamic components that are updated during execution
-    # IMPORTANT: add_messages is used to automatically add the messages to the state 
+    # Variables that are getting updated during agent flow
+    step: int 
     messages: Annotated[List[BaseMessage], add_messages]
-    current_sheet_state: str
+    code_snippet: Optional[str] 
+    code_success: Optional[bool]
+    is_solved: bool
+    errors_or_issues: str 
     previous_sheet_state: str
-    step: int
+    current_sheet_state: str
+    
+

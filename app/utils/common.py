@@ -18,6 +18,7 @@ class ToolResponse:
         self.code = code
         self.obs = obs
         self.obs_type = obs_type
+        
 
     def __str__(self) -> str:
         return f"Tool call Response: {self.code}, {self.obs}, {self.obs_type}"
