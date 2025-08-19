@@ -20,9 +20,9 @@ services:
       - ./app:/app/app
       # Mount GCS credentials (create credentials.json in project root)
       - ./credentials.json:/app/credentials.json
-    # Uncomment the following lines to enable hot reloading
+
     command: uvicorn app.app:create_app --host 0.0.0.0 --port 8000 --reload --factory  # TODO: Recomment
-    # For production, use the default CMD from the Dockerfile
+ 
 
 volumes:
   sandbox:

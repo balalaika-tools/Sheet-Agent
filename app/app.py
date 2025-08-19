@@ -43,8 +43,8 @@ def create_app() -> FastAPI:
     
     # App Initialization
     app = FastAPI(
-        title="WiseBid AI Service",
-        description="Backend API for the WiseBid AI service.",
+        title="Sheet Agent API",
+        description="API for the Sheet Agent",
         version="0.1.0",
         lifespan=lifespan,
         # Add security scheme to OpenAPI documentation
